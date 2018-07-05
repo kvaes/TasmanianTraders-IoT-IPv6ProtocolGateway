@@ -149,7 +149,7 @@
               ],
               "loadBalancerInboundNatRules": [
                 {
-                  "id": "[concat(variables('lbID'),'/inboundNatRules/RDP-VM', copyindex())]"
+                  "id": "[concat(variables('lbID'),'/inboundNatRules/SSH-VM', copyindex())]"
                 }
               ]
             }
@@ -207,7 +207,7 @@
         ],
         "inboundNatRules": [
           {
-            "name": "VM0-SSH",
+            "name": "SSH-VM0",
             "properties": {
               "frontendIPConfiguration": {
                 "id": "[variables('ipv4FrontEndIPConfigID')]"
@@ -219,7 +219,7 @@
             }
           },
           {
-            "name": "VM1-SSH",
+            "name": "SSH-VM1",
             "properties": {
               "frontendIPConfiguration": {
                 "id": "[variables('ipv4FrontEndIPConfigID')]"
@@ -311,8 +311,8 @@
           "imageReference": {
             "publisher": "Canonical",
             "offer": "UbuntuServer",
-            "sku": "2012-R2-Datacenter",
-            "version": "18.04-LTS"
+            "sku": "18.04-LTS",
+            "version": "Latest"
           },
           "osDisk": {
             "createOption": "FromImage"
