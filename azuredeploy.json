@@ -25,6 +25,30 @@
       "metadata": {
         "description": "DNS prefix for IPv6 IP Address of the load balancer. It must be lowercase and match the regex: ^[a-z][a-z0-9-]{1,61}[a-z0-9]$."
       }
+    },
+    "envHostname": {
+      "type": "string",
+      "metadata": {
+        "description": "Event Hub Hostname"
+      }
+    },
+    "envHubConnectionstring": {
+      "type": "string",
+      "metadata": {
+        "description": "Event Hub Connection String"
+      }
+    },
+    "envRedisHostname": {
+      "type": "string",
+      "metadata": {
+        "description": "Redis Hostname"
+      }
+    },
+    "envRedisKey": {
+      "type": "string",
+      "metadata": {
+        "description": "Redis Secret/Key"
+      }
     }
   },
   "variables": {
@@ -59,7 +83,11 @@
     "extensionName": "DockerExtension",
     "asNumberOfFaultDomains": 3,
     "asNumberOfUpdateDomains": 5,
-    "asManagedDisks": true
+    "asManagedDisks": true,
+    "envHostname": "[parameters('envHostname')]",
+    "envHubConnectionstring": "[parameters('envHubConnectionstring')]",
+    "envRedisHostname": "[parameters('envRedisHostname')]",
+    "envRedisKey": "[parameters('envRedisKey')]"
   },
   "resources": [
     {
@@ -234,7 +262,7 @@
         ],
         "loadBalancingRules": [
           {
-            "name": "LBRuleIPv4",
+            "name": "LBRule1812IPv4",
             "properties": {
               "frontendIPConfiguration": {
                 "id": "[variables('ipv4FrontEndIPConfigID')]"
@@ -242,9 +270,9 @@
               "backendAddressPool": {
                 "id": "[variables('ipv4LbBackendPoolID')]"
               },
-              "protocol": "Tcp",
-              "frontendPort": 80,
-              "backendPort": 80,
+              "protocol": "Udp",
+              "frontendPort": 1812,
+              "backendPort": 1813,
               "enableFloatingIP": false,
               "idleTimeoutInMinutes": 5,
               "probe": {
@@ -253,7 +281,81 @@
             }
           },
           {
-            "name": "LBRuleIPv6",
+            "name": "LBRule8080IPv4",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('ipv4FrontEndIPConfigID')]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('ipv4LbBackendPoolID')]"
+              },
+              "protocol": "Tcp",
+              "frontendPort": 8080,
+              "backendPort": 8081,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 5,
+              "probe": {
+                "id": "[variables('ipv4ipv6lbProbeID')]"
+              }
+            }
+          },
+          {
+            "name": "LBRule41234IPv4",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('ipv4FrontEndIPConfigID')]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('ipv4LbBackendPoolID')]"
+              },
+              "protocol": "Tcp",
+              "frontendPort": 41234,
+              "backendPort": 41235,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 5,
+              "probe": {
+                "id": "[variables('ipv4ipv6lbProbeID')]"
+              }
+            }
+          },
+          {
+            "name": "LBRule51000IPv4",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('ipv4FrontEndIPConfigID')]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('ipv4LbBackendPoolID')]"
+              },
+              "protocol": "Tcp",
+              "frontendPort": 51000,
+              "backendPort": 51001,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 5,
+              "probe": {
+                "id": "[variables('ipv4ipv6lbProbeID')]"
+              }
+            }
+          },
+          {
+            "name": "LBRule1812IPv6",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('ipv6FrontEndIPConfigID')]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('ipv6LbBackendPoolID')]"
+              },
+              "protocol": "Udp",
+              "frontendPort": 1812,
+              "backendPort": 1812,
+              "probe": {
+                "id": "[variables('ipv4ipv6lbProbeID')]"
+              }
+            }
+          },
+          {
+            "name": "LBRule8080IPv6",
             "properties": {
               "frontendIPConfiguration": {
                 "id": "[variables('ipv6FrontEndIPConfigID')]"
@@ -262,8 +364,42 @@
                 "id": "[variables('ipv6LbBackendPoolID')]"
               },
               "protocol": "Tcp",
-              "frontendPort": 80,
+              "frontendPort": 8080,
               "backendPort": 8080,
+              "probe": {
+                "id": "[variables('ipv4ipv6lbProbeID')]"
+              }
+            }
+          },
+          {
+            "name": "LBRule41234IPv6",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('ipv6FrontEndIPConfigID')]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('ipv6LbBackendPoolID')]"
+              },
+              "protocol": "Tcp",
+              "frontendPort": 41234,
+              "backendPort": 41234,
+              "probe": {
+                "id": "[variables('ipv4ipv6lbProbeID')]"
+              }
+            }
+          },
+          {
+            "name": "LBRule51000IPv6",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('ipv6FrontEndIPConfigID')]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('ipv6LbBackendPoolID')]"
+              },
+              "protocol": "Tcp",
+              "frontendPort": 51000,
+              "backendPort": 51000,
               "probe": {
                 "id": "[variables('ipv4ipv6lbProbeID')]"
               }
@@ -349,13 +485,25 @@
           "docker": {
             "port": "2375"
           },
+          "compose-environment": {
+            "HOSTNAME": "[variables('envHostname')]",
+            "HUBCS": "[variables('envHubConnectionstring')]",
+            "REDISCACHEHOSTNAME": "[variables('envRedisHostname')]",
+            "REDISCACHEKEY": "[variables('envRedisKey')]"
+          },
           "compose": {
             "wordpress": {
-              "image": "wordpress:latest",
+              "image": "kvaes/tasmaniantraders-iot-protocolgateway:latest",
               "restart": "always",
               "ports": [
-                "8080:80",
-                "80:80"
+                "1812:1812",
+                "1813:1812",
+                "8080:8080",
+                "8081:8080",
+                "41234:41234",
+                "41235:41234",
+                "51000:51000",
+                "51001:51000"
               ]
             }
           }
@@ -364,4 +512,3 @@
     }
   ]
 }
-
