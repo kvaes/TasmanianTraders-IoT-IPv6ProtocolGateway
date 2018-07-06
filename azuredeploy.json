@@ -57,7 +57,7 @@
     "adminPassword": "[parameters('adminPassword')]",
     "dnsNameforIPv4LbIP": "[parameters('dnsNameforIPv4LbIP')]",
     "dnsNameforIPv6LbIP": "[parameters('dnsNameforIPv6LbIP')]",
-    "genericPrefix": "IPV6",
+    "genericPrefix": "IOTIPV6",
     "vmNamePrefix": "[concat(variables('genericPrefix'),'-VM')]",
     "nicNamePrefix": "[concat(variables('genericPrefix'),'-NIC')]",
     "availabilitySetName": "[concat(variables('genericPrefix'),'-AS')]",
